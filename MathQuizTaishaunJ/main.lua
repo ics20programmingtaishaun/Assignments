@@ -29,7 +29,15 @@ local incorrectObject
 -- variable of timer
 local totalSeconds = 15
 local secondsLeft = 15
-local clockText = display.newText("")
+local clockText = display.newText("", display.contentWidth/7.5, display.contentHeight/7.8, nil, 50)
+local countDownTimer
+local lives = 3
+local heartOne
+local heartTwo 
+local heartThree 
+local score = 0
+local pointsObject 
+
 -----------------------------------------------------------------------
 -- Local Functions
 -----------------------------------------------------------------------
@@ -78,6 +86,44 @@ local function AskQuestion()
 	end	
 end 
 
+local function UpdateTime()
+
+	-- number of seconds 
+	secondsLeft = secondsLeft - 1
+
+	-- show the number of seconds left in clock text 
+	clockText.text = secondsLeft .. ""
+
+	if (secondsLeft == 0) then 
+		-- reset the number of seconds 
+		secondsLeft = totalSeconds
+		lives = lives - 1 
+
+		if (lives == 2) then 
+			heartThree.isVisible = false 
+			AskQuestion()
+			elseif (lives == 1) then 
+			heartTwo.isVisible = false
+			AskQuestion()
+			elseif (lives == 0) then 
+			heartOne.isVisible = false 
+			timer.cancel(countDownTimer)
+		end
+	end
+end
+
+UpdateTime()
+-- calls the timer
+local function StartTimer()
+	-- make a timer that goes on forever
+	countDownTimer = timer.performWithDelay( 1500, UpdateTime, 0)
+end 
+
+local function KeepTime()
+	timer.resume(countDownTimer)
+	secondsLeft = 15
+end
+
 local function HideCorrect()
 	correctObject.isVisible = false 
 	AskQuestion()
@@ -105,12 +151,18 @@ local function NumericFieldListener( event )
 		if (userAnswer == correctAnswer) then
 			correctObject.isVisible = true 
 			incorrectObject.isVisible = false
+			score = score + 2
 			timer.performWithDelay(2000, HideCorrect)
+			timer.pause(countDownTimer)
+			timer.performWithDelay(2000, KeepTime)
 
 		elseif  (userAnswer ~= correctAnswer) then
 			incorrectObject.isVisible = true
 			correctObject.isVisible = false
 			timer.performWithDelay(2000, HideIncorrect)
+			lives = lives - 1
+			timer.pause(countDownTimer)
+			timer.performWithDelay(2000, KeepTime)
 		end
 
 		-- clear text field
@@ -143,9 +195,28 @@ numericField.inputType = "decimal"
 -- add the event listener for the numeric field
 numericField:addEventListener( "userInput", NumericFieldListener)
 
+-- make the lives show 
+heartOne = display.newImageRect("Images/heart (2).png", 115, 115)
+heartOne.x = display.contentWidth * 5 / 8
+heartOne.y = display.contentHeight * 1 / 7 
+
+heartTwo = display.newImageRect("Images/heart (2).png", 115, 115)
+heartTwo.x = display.contentWidth * 6 / 8
+heartTwo.y = display.contentHeight * 1 / 7 
+
+heartThree = display.newImageRect("Images/heart (2).png", 115, 115)
+heartThree.x = display.contentWidth * 7 / 8
+heartThree.y = display.contentHeight * 1 / 7 
+
+-- make the score isVisible
+pointsObject = display.newText( "", display.contentWidth/1.4, display.contentHeight*1/3, nil, 50)
+pointsObject:setTextColor(1, 0, 0)
+pointsObject.isVisible = true
+
 ------------------------------------------------------------------------
 -- Function Calls 
 ------------------------------------------------------------------------
 
 -- call the function to ask the question 
 AskQuestion()
+StartTimer()
