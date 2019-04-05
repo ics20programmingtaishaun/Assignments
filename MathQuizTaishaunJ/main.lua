@@ -196,15 +196,15 @@ numericField.inputType = "decimal"
 numericField:addEventListener( "userInput", NumericFieldListener)
 
 -- make the lives show 
-heartOne = display.newImageRect("Images/heart (2).png", 115, 115)
+heartOne = display.newImageRect("images/heart (2).png", 115, 115)
 heartOne.x = display.contentWidth * 5 / 8
 heartOne.y = display.contentHeight * 1 / 7 
 
-heartTwo = display.newImageRect("Images/heart (2).png", 115, 115)
+heartTwo = display.newImageRect("images/heart (2).png", 115, 115)
 heartTwo.x = display.contentWidth * 6 / 8
 heartTwo.y = display.contentHeight * 1 / 7 
 
-heartThree = display.newImageRect("Images/heart (2).png", 115, 115)
+heartThree = display.newImageRect("images/heart (2).png", 115, 115)
 heartThree.x = display.contentWidth * 7 / 8
 heartThree.y = display.contentHeight * 1 / 7 
 
