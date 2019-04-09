@@ -25,18 +25,26 @@ local userAnswer
 local correctAnswer
 local incorrectAnswer
 local incorrectObject
+local correctSound = audio.loadSound( "sounds/Cash Register Cha Ching.mp3")
+local incorrectSound = audio.loadSound( "sounds/wrongSound.mp3")
+local whackSound = audio.loadSound( "sounds/whack.mp3")
+local correctSoundChannel
+local incorrectSoundChannel
+local whackSoundChannel
 
 -- variable of timer
-local totalSeconds = 15
-local secondsLeft = 15
+local totalSeconds = 10
+local secondsLeft = 10
 local clockText = display.newText("", display.contentWidth/7.5, display.contentHeight/7.8, nil, 50)
+local scoreText = display.newText("", display.contentWidth/7.0, display.contentHeight/4.5, nil, 50)
 local countDownTimer
 local lives = 3
 local heartOne
 local heartTwo 
 local heartThree 
 local score = 0
-local pointsObject 
+local pointsObject
+local gameOver  
 
 -----------------------------------------------------------------------
 -- Local Functions
@@ -46,7 +54,7 @@ local function AskQuestion()
 	-- *** Make sure to declare this variable above
 	randomOperator = math.random(1,4) 
 	-- generate 2 random numbers
-	randomNumber1 = math.random(20,40)
+	randomNumber1 = math.random(11,30)
 	randomNumber2 = math.random(0,10)
 
 	-- if the random operator is 1, then do addition
@@ -106,8 +114,10 @@ local function UpdateTime()
 			heartTwo.isVisible = false
 			AskQuestion()
 			elseif (lives == 0) then 
-			heartOne.isVisible = false 
+			heartOne.isVisible = false
+			whackSoundChannel = audio.play(whackSound) 
 			timer.cancel(countDownTimer)
+           
 		end
 	end
 end
@@ -121,7 +131,7 @@ end
 
 local function KeepTime()
 	timer.resume(countDownTimer)
-	secondsLeft = 15
+	secondsLeft = 10
 end
 
 local function HideCorrect()
@@ -151,8 +161,13 @@ local function NumericFieldListener( event )
 		if (userAnswer == correctAnswer) then
 			correctObject.isVisible = true 
 			incorrectObject.isVisible = false
-			score = score + 2
+			-- number of score 
+		score = score + 2
+
+		-- show the score 
+		scoreText.text = score .. " : score"
 			timer.performWithDelay(2000, HideCorrect)
+			correctSoundChannel = audio.play(correctSound)
 			timer.pause(countDownTimer)
 			timer.performWithDelay(2000, KeepTime)
 
@@ -160,6 +175,7 @@ local function NumericFieldListener( event )
 			incorrectObject.isVisible = true
 			correctObject.isVisible = false
 			timer.performWithDelay(2000, HideIncorrect)
+			incorrectSoundChannel = audio.play(incorrectSound)
 			lives = lives - 1
 			timer.pause(countDownTimer)
 			timer.performWithDelay(2000, KeepTime)
